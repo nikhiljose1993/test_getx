@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:test_getx/count_controller.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -32,6 +34,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    // Get.put() for instantiating the state.
+    final CountController cnt = Get.put(CountController());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -44,15 +48,28 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            // Continuosly observing state changes. No need to use update() when state changes.
+            Obx(
+              () => Text(
+                '${cnt.count}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             ),
+            // Have to call update method when state changes.
+            GetBuilder(
+              builder: (CountController controller) => Text(
+                '${controller.count}',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+            )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          cnt.increment();
+          // Get.to(const AnotherPage());
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
